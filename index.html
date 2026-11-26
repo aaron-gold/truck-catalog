@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Truck Damage Dictionary · UVeye</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0c1a35;
+  --navy-mid:#162242;
+  --navy-light:#1e3160;
+  --teal:#0d9488;
+  --teal-h:#0f766e;
+  --ink:#0f172a;
+  --ink-2:#334155;
+  --ink-3:#64748b;
+  --ink-4:#94a3b8;
+  --bg:#f8fafc;
+  --surface:#ffffff;
+  --line:#e2e8f0;
+  --line-2:#cbd5e1;
+  --s1:#dc2626; --s1b:#fef2f2; --s1l:#fecaca;
+  --s2:#d97706; --s2b:#fffbeb; --s2l:#fde68a;
+  --s3:#2563eb; --s3b:#eff6ff; --s3l:#bfdbfe;
+  --sidebar:220px;
+}
+html{font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+body{margin:0;min-height:100vh}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0}
+input{font-family:inherit}
+/* Sidebar */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar);background:var(--navy);display:flex;flex-direction:column;z-index:100;user-select:none}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sidebar-logo-mark{display:flex;align-items:center;gap:10px}
+.sidebar-logo-mark span{font-size:13px;font-weight:600;color:white;letter-spacing:-0.3px}
+.sidebar-logo-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px}
+.sidebar-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:7px;cursor:pointer;transition:background .12s;color:rgba(255,255,255,0.6);font-size:13px;font-weight:500}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.9)}
+.nav-item.active{background:rgba(255,255,255,0.12);color:white}
+.nav-item svg{flex-shrink:0;opacity:0.7}
+.nav-item.active svg{opacity:1}
+.sidebar-fleet{margin:12px 10px;padding:10px 12px;background:rgba(255,255,255,0.06);border-radius:7px;border:1px solid rgba(255,255,255,0.1)}
+.sidebar-fleet-name{font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:0.3px}
+.sidebar-fleet-val{font-size:12.5px;font-weight:600;color:white;margin-top:2px}
+.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,0.08)}
+.sidebar-share{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);cursor:pointer;border-radius:6px;padding:8px;width:100%;transition:color .12s}
+.sidebar-share:hover{color:white}
+/* Main layout */
+.main{margin-left:var(--sidebar);min-height:100vh;display:flex;flex-direction:column}
+.fleet-banner{background:var(--navy-mid);color:white;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12.5px}
+.fleet-banner-name{font-weight:600;display:flex;align-items:center;gap:10px}
+.fleet-banner-actions{display:flex;align-items:center;gap:12px}
+.fleet-banner-actions a{color:rgba(255,255,255,0.65);text-decoration:none;font-size:12px;transition:color .12s}
+.fleet-banner-actions a:hover{color:white}
+/* Filter bar */
+.filterbar{background:var(--surface);border-bottom:1px solid var(--line);padding:12px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:50}
+.search-wrap{position:relative;flex:0 0 220px}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--ink-4)}
+.search-input{width:100%;padding:7px 10px 7px 32px;border:1.5px solid var(--line);border-radius:7px;font-size:13px;color:var(--ink);outline:none;transition:border-color .15s;background:var(--bg)}
+.search-input:focus{border-color:var(--teal)}
+.filter-pill{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;transition:all .12s;white-space:nowrap}
+.filter-pill:hover{border-color:var(--line-2);background:var(--bg)}
+.filter-pill.active{background:var(--ink);border-color:var(--ink);color:white}
+.filter-pill.sev1.active{background:var(--s1);border-color:var(--s1);color:white}
+.filter-pill.sev2.active{background:var(--s2);border-color:var(--s2);color:white}
+.filter-pill.sev3.active{background:var(--s3);border-color:var(--s3);color:white}
+.filter-sep{width:1px;height:20px;background:var(--line);flex-shrink:0}
+.filter-select{padding:6px 10px;border:1.5px solid var(--line);border-radius:7px;font-size:12px;color:var(--ink-2);background:var(--surface);cursor:pointer;outline:none;font-family:inherit}
+.filter-select:focus{border-color:var(--teal)}
+.filter-examples{display:flex;align-items:center;gap:7px;padding:6px 12px;border:1.5px solid var(--line);border-radius:20px;font-size:12px;font-weight:500;color:var(--ink-2);cursor:pointer;transition:all .12s;background:var(--surface)}
+.filter-examples:hover{background:var(--bg)}
+.filter-examples.active{border-color:var(--teal);color:var(--teal);background:#f0fdfa}
+.filter-count{margin-left:4px;padding:1px 6px;border-radius:10px;background:var(--line);font-size:11px;font-weight:600;color:var(--ink-3)}
+.filter-examples.active .filter-count{background:rgba(13,148,136,0.12);color:var(--teal)}
+/* Content */
+.content{flex:1;padding:0 24px 48px}
+/* Overview */
+.overview{padding:28px 0}
+.ov-sev{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px}
+.ov-sev-card{border-radius:10px;overflow:hidden;border:1.5px solid var(--line)}
+.ov-sev-top{padding:16px 18px 14px}
+.ov-sev-top h3{font-size:22px;font-weight:700;margin-bottom:1px}
+.ov-sev-top .ov-sev-label{font-size:12px;font-weight:600;margin-bottom:8px}
+.ov-sev-top .ov-sev-customer{font-size:11px;color:var(--ink-3);margin-bottom:8px}
+.ov-sev-top .ov-sev-action{font-size:12px;font-weight:500;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,0.05)}
+.ov-sev-bottom{padding:12px 18px;background:var(--surface);border-top:1.5px solid var(--line);font-size:12px;color:var(--ink-3)}
+.ov-bar-wrap{margin-bottom:32px}
+.ov-bar-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;margin-bottom:6px}
+.ov-bar{height:28px;border-radius:6px;overflow:hidden;display:flex}
+.ov-bar-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;transition:flex .3s}
+.ov-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ov-stat{background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:14px 16px}
+.ov-stat-num{font-size:26px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:4px}
+.ov-stat-label{font-size:12px;color:var(--ink-3)}
+/* Damage lines table */
+.tbl-wrap{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;overflow:hidden;margin-top:20px}
+table{width:100%;border-collapse:collapse}
+th{padding:11px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--ink-3);background:var(--bg);border-bottom:1.5px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--ink);background:#f1f5f9}
+td{padding:11px 14px;font-size:12.5px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
+.sev-badge{display:inline-flex;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600}
+.sev-badge.s1{background:var(--s1b);color:var(--s1)}
+.sev-badge.s2{background:var(--s2b);color:var(--s2)}
+.sev-badge.s3{background:var(--s3b);color:var(--s3)}
+.sev-badge.s0{background:var(--bg);color:var(--ink-4);border:1px solid var(--line)}
+.img-count{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500}
+.img-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0}
+/* Car parts */
+.parts-wrap{margin-top:20px;display:flex;flex-direction:column;gap:4px}
+.part-group{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.part-group-hd{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none}
+.part-group-hd:hover{background:#fafbfc}
+.part-group-name{font-size:14px;font-weight:600;flex:1}
+.part-group-meta{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:10px}
+.part-cov{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.cov-full{background:#dcfce7;color:#15803d}
+.cov-part{background:#fef9c3;color:#a16207}
+.cov-none{background:var(--bg);color:var(--ink-4)}
+.part-detections{padding:0 18px 14px;display:flex;flex-direction:column;gap:6px}
+.det-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;transition:background .1s}
+.det-row:hover{background:var(--bg)}
+.det-row-name{flex:1;font-size:13px;font-weight:500;color:var(--ink)}
+.det-row-imgs{font-size:11.5px;color:var(--teal);font-weight:500}
+/* Browse */
+.browse-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding-top:20px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .15s;display:flex;flex-direction:column}
+.card:hover{border-color:var(--line-2);box-shadow:0 4px 16px rgba(0,0,0,0.07);transform:translateY(-1px)}
+.card-img{position:relative;background:var(--bg);aspect-ratio:16/10;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card-img img{width:100%;height:100%;object-fit:cover}
+.card-ph{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink-4);font-size:11px}
+.card-sev{position:absolute;top:8px;left:8px;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:700;backdrop-filter:blur(4px)}
+.card-body{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:4px}
+.card-det{font-size:13px;font-weight:600;color:var(--ink)}
+.card-part{font-size:12px;color:var(--ink-3)}
+.card-footer{padding:9px 14px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:var(--ink-4)}
+/* PDV overlay */
+.pdv-overlay{position:fixed;inset:0;z-index:200;display:flex}
+.pdv-scrim{flex:1;background:rgba(0,0,0,0.3);backdrop-filter:blur(2px)}
+.pdv{width:680px;max-width:100%;background:var(--surface);height:100%;overflow-y:auto;display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,0.12)}
+.pdv-hd{padding:18px 24px 16px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px;position:sticky;top:0;background:var(--surface);z-index:10}
+.pdv-back{color:var(--ink-3);display:flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer;padding:6px 10px;border-radius:6px;border:1.5px solid var(--line);flex-shrink:0;transition:all .12s;margin-top:3px}
+.pdv-back:hover{border-color:var(--line-2);color:var(--ink)}
+.pdv-title{flex:1}
+.pdv-title h2{font-size:20px;font-weight:700;color:var(--navy);line-height:1.2;margin-bottom:4px}
+.pdv-badges{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.veh-badge{padding:3px 9px;background:var(--navy);color:white;border-radius:4px;font-size:11px;font-weight:600}
+.pdv-sec{padding:20px 24px;border-bottom:1px solid var(--line)}
+.pdv-sec-title{font-size:11px;font-weight:600;color:var(--ink-4);letter-spacing:0.5px;margin-bottom:12px}
+/* Carousels */
+.carousel-label{display:inline-flex;align-items:center;gap:7px;padding:4px 10px;border-radius:5px;font-size:11.5px;font-weight:700;margin-bottom:12px}
+.carousel-label.healthy{background:#dcfce7;color:#15803d;border:1.5px solid #bbf7d0}
+.carousel-label.damaged{background:var(--s1b);color:var(--s1);border:1.5px solid var(--s1l)}
+.carousel-track{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.carousel-track::-webkit-scrollbar{display:none}
+.cr-slide{flex:0 0 auto;width:280px;border:2px solid var(--line);border-radius:8px;overflow:hidden;scroll-snap-align:start;cursor:pointer;transition:border-color .15s}
+.cr-slide.healthy-s{border-color:#bbf7d0}
+.cr-slide.damaged-s{border-color:var(--s1l)}
+.cr-slide:hover{border-color:var(--line-2)}
+.cr-slide.healthy-s:hover{border-color:#86efac}
+.cr-slide.damaged-s:hover{border-color:var(--s1)}
+.cr-img{aspect-ratio:16/10;background:var(--bg);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
+.cr-img img{width:100%;height:100%;object-fit:cover}
+.cr-ph{display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--ink-4);font-size:11px;text-align:center;padding:16px}
+.cr-label{padding:10px 12px;background:var(--surface)}
+.cr-label-main{font-size:12.5px;font-weight:600;color:var(--ink)}
+.cr-label-sub{font-size:11px;color:var(--ink-3);margin-top:2px}
+/* Damage lines list in PDV */
+.dl-group{margin-bottom:16px}
+.dl-group-title{font-size:11px;font-weight:600;color:var(--ink-4);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.dl-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;transition:all .12s;margin-bottom:6px}
+.dl-row:hover{border-color:var(--line-2);background:#fafbfc}
+.dl-thumb{width:52px;height:36px;border-radius:5px;overflow:hidden;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.dl-thumb img{width:100%;height:100%;object-fit:cover}
+.dl-det{flex:1}
+.dl-det-name{font-size:13px;font-weight:600;color:var(--ink)}
+.dl-det-meta{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+.dl-det-imgs{font-size:11.5px;font-weight:600;color:var(--teal)}
+.dl-det-noimgs{font-size:11.5px;color:var(--ink-4)}
+/* Lightbox */
+.lb{position:fixed;inset:0;z-index:500;background:rgba(10,15,30,0.96);display:flex;flex-direction:column;user-select:none}
+.lb-toolbar{padding:14px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.08)}
+.lb-info{flex:1;font-size:13px;font-weight:500;color:white}
+.lb-info-sub{font-size:11.5px;color:rgba(255,255,255,0.45);margin-top:2px}
+.lb-btn{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:7px;border:1.5px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;background:transparent;font-family:inherit}
+.lb-btn:hover{background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.3)}
+.lb-btn.on{background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3)}
+.lb-btn-icon{padding:7px;border-radius:7px;border:1.5px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;background:transparent}
+.lb-btn-icon:hover{background:rgba(255,255,255,0.1);color:white}
+.lb-bright-wrap{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.5);font-size:12px}
+.lb-bright-slider{accent-color:white;width:80px;cursor:pointer}
+.lb-bright-val{min-width:30px;text-align:right;color:rgba(255,255,255,0.7);font-size:12px}
+.lb-vp{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.lb-transform{position:relative;transform-origin:center;will-change:transform;cursor:grab;line-height:0}
+.lb-transform:active{cursor:grabbing}
+.lb-transform img{max-height:calc(100vh - 160px);max-width:100%;object-fit:contain;display:block}
+.lb-bbox{position:absolute;border:2px dashed #f59e0b;border-radius:3px;pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(0,0,0,0.3);display:none}
+.lb-bbox.show{display:block}
+.lb-nav-btn{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.5);border:1.5px solid rgba(255,255,255,0.15);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:0;z-index:10}
+.lb-nav-btn:hover{background:rgba(0,0,0,0.75);border-color:rgba(255,255,255,0.3)}
+.lb-nav-btn.prev{left:16px}
+.lb-nav-btn.next{right:16px}
+.lb-film{padding:12px 20px;display:flex;align-items:center;gap:8px;overflow-x:auto;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;scrollbar-width:none}
+.lb-film::-webkit-scrollbar{display:none}
+.lb-thumb{width:52px;height:36px;border-radius:5px;overflow:hidden;cursor:pointer;border:2px solid rgba(255,255,255,0.15);opacity:0.5;transition:all .15s;flex-shrink:0}
+.lb-thumb:hover{opacity:0.75;border-color:rgba(255,255,255,0.4)}
+.lb-thumb.active{opacity:1;border-color:white}
+.lb-thumb img{width:100%;height:100%;object-fit:cover}
+.lb-count{font-size:12px;color:rgba(255,255,255,0.4);margin-left:auto;flex-shrink:0}
+/* Placeholder */
+.ph-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--ink-4);padding:24px}
+.ph-wrap svg{opacity:0.3}
+.ph-wrap span{font-size:11px}
+/* Loading */
+.loading{display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:14px;color:var(--ink-3)}
+.spinner{width:28px;height:28px;border:2.5px solid var(--line);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Misc */
+.section-hd{padding:28px 0 4px;display:flex;align-items:center;justify-content:space-between}
+.section-hd h2{font-size:17px;font-weight:700;color:var(--navy)}
+.section-hd small{font-size:12px;color:var(--ink-4)}
+.empty{padding:40px;text-align:center;color:var(--ink-4);font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:5px;font-size:11.5px;font-weight:500}
+.chip-veh{background:var(--navy-mid);color:rgba(255,255,255,0.9)}
+/* Scroll */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+/* Mobile */
+@media(max-width:768px){
+  :root{--sidebar:0px}
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .browse-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .pdv{width:100%}
+  .ov-sev{grid-template-columns:1fr}
+  .ov-stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(function(){
+const {createElement:x,useState,useEffect,useRef,useCallback,useMemo,Fragment}=React;
+
+// ═══════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════
+const LIB_URL='https://raw.githubusercontent.com/Aaron-gold/truck-catalog-images/main/damage-library.json';
+const IMG_BASE='https://raw.githubusercontent.com/Aaron-gold/truck-catalog-images/main/images/';
+const imgUrl=p=>IMG_BASE+p;
+
+const SEV={
+  'SEV 1':{cls:'s1',int:'Ground it',cust:'Grounding',desc:'Safety, compliance or out-of-service risk',action:"Don't dispatch until it's fixed.",color:'#dc2626',bg:'#fef2f2'},
+  'SEV 2':{cls:'s2',int:'Schedule PM',cust:'High impact',desc:'Significant issue, not immediately dangerous',action:'Schedule preventive maintenance soon.',color:'#d97706',bg:'#fffbeb'},
+  'SEV 3':{cls:'s3',int:'Next service',cust:'Cosmetic & condition',desc:'Minor issue, cosmetic or condition tracking',action:'Fix during regular maintenance.',color:'#2563eb',bg:'#eff6ff'},
+};
+
+const FLEETS={mvt:'MVT · Mesilla Valley Transportation',daimler:'Daimler Truck',mexamerik:'MexAmerik',train:'Training view'};
+
+// Zone mapping
+const ZONE_OVERRIDES={
+  'sun visor':['front'],'sunviser':['front'],'front emblem':['front'],'emblem':['front'],
+  'license plate':['rear'],'tail light':['rear'],'brake light':['rear'],
+  'glad hand':['rear'],'electrical line':['rear'],'glad hands':['rear'],
+  'landing gear':['left','right'],'landing leg':['left','right'],
+  'dot bumper':['rear'],'5th wheel':['underbody'],'flowbelow':['underbody'],
+  'header board':['front'],'mudflap':['rear'],'mud flap':['rear'],
+};
+function getZones(row){
+  const p=row.carPart.toLowerCase();
+  for(const[k,v]of Object.entries(ZONE_OVERRIDES))if(p.includes(k))return v;
+  const o=row.orientation.toLowerCase();
+  if(/left\/right/.test(o))return['left','right'];
+  const z=[];
+  if(/\bleft\b/.test(o))z.push('left');
+  if(/\bright\b/.test(o))z.push('right');
+  if(/front/.test(o))z.push('front');
+  if(/rear/.test(o))z.push('rear');
+  if(/top/.test(o))z.push('top');
+  if(/under/.test(o))z.push('underbody');
+  if(/all sides/.test(o))return['left','right','front','rear'];
+  return[...new Set(z)];
+}
+
+// ═══════════════════════════════════════════════════════════
+// ICONS (inline SVG)
+// ═══════════════════════════════════════════════════════════
+const Ic={
+  grid:()=>x('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('rect',{x:3,y:3,width:7,height:7}),x('rect',{x:14,y:3,width:7,height:7}),x('rect',{x:14,y:14,width:7,height:7}),x('rect',{x:3,y:14,width:7,height:7})),
+  list:()=>x('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('line',{x1:8,y1:6,x2:21,y2:6}),x('line',{x1:8,y1:12,x2:21,y2:12}),x('line',{x1:8,y1:18,x2:21,y2:18}),x('line',{x1:3,y1:6,x2:3.01,y2:6}),x('line',{x1:3,y1:12,x2:3.01,y2:12}),x('line',{x1:3,y1:18,x2:3.01,y2:18})),
+  car:()=>x('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('path',{d:'M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v9a2 2 0 01-2 2h-2'}),x('circle',{cx:7.5,cy:17.5,r:2.5}),x('circle',{cx:17.5,cy:17.5,r:2.5})),
+  img:()=>x('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('rect',{x:3,y:3,width:18,height:18,rx:2}),x('circle',{cx:8.5,cy:8.5,r:1.5}),x('path',{d:'M21 15l-5-5L5 21'})),
+  map:()=>x('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('polygon',{points:'1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'}),x('line',{x1:8,y1:2,x2:8,y2:18}),x('line',{x1:16,y1:6,x2:16,y2:22})),
+  search:()=>x('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('circle',{cx:11,cy:11,r:8}),x('line',{x1:21,y1:21,x2:16.65,y2:16.65})),
+  close:()=>x('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('line',{x1:18,y1:6,x2:6,y2:18}),x('line',{x1:6,y1:6,x2:18,y2:18})),
+  chevL:()=>x('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2.5},x('polyline',{points:'15 18 9 12 15 6'})),
+  chevR:()=>x('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2.5},x('polyline',{points:'9 18 15 12 9 6'})),
+  chevD:()=>x('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('polyline',{points:'6 9 12 15 18 9'})),
+  link:()=>x('svg',{width:12,height:12,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('path',{d:'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71'}),x('path',{d:'M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71'})),
+  share:()=>x('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('circle',{cx:18,cy:5,r:3}),x('circle',{cx:6,cy:12,r:3}),x('circle',{cx:18,cy:19,r:3}),x('line',{x1:8.59,y1:13.51,x2:15.42,y2:17.49}),x('line',{x1:15.41,y1:6.51,x2:8.59,y2:10.49})),
+  ph:()=>x('svg',{width:28,height:28,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.5},x('rect',{x:3,y:3,width:18,height:18,rx:2}),x('circle',{cx:8.5,cy:8.5,r:1.5}),x('path',{d:'M21 15l-5-5L5 21'})),
+  sun:()=>x('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('circle',{cx:12,cy:12,r:5}),x('line',{x1:12,y1:1,x2:12,y2:3}),x('line',{x1:12,y1:21,x2:12,y2:23}),x('line',{x1:4.22,y1:4.22,x2:5.64,y2:5.64}),x('line',{x1:18.36,y1:18.36,x2:19.78,y2:19.78}),x('line',{x1:1,y1:12,x2:3,y2:12}),x('line',{x1:21,y1:12,x2:23,y2:12}),x('line',{x1:4.22,y1:19.78,x2:5.64,y2:18.36}),x('line',{x1:18.36,y1:5.64,x2:19.78,y2:4.22})),
+  bb:()=>x('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('rect',{x:3,y:3,width:18,height:18,rx:1}),x('path',{d:'M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2M19 9h2m-2 6h2',strokeDasharray:'4 2'})),
+  refresh:()=>x('svg',{width:13,height:13,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2},x('path',{d:'M23 4v6h-6'}),x('path',{d:'M20.49 15a9 9 0 11-2.12-9.36L23 10'})),
+};
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function norm(s){return(s||'').toLowerCase().replace(/\s+/g,' ').trim()}
+function sevClass(s){if(!s)return 's0';return 's'+s.replace(/[^0-9]/g,'')}
+function SevBadge({sev,fleet}){
+  const cfg=SEV[sev];
+  if(!cfg)return x('span',{className:'sev-badge s0'},'Unrated');
+  return x('span',{className:'sev-badge '+cfg.cls},fleet?cfg.cust:`${sev} · ${cfg.int}`);
+}
+function Placeholder({label}){
+  return x('div',{className:'ph-wrap'},x(Ic.ph),x('span',null,label||'Coming soon'));
+}
+function ImgOrPh({src,alt,style}){
+  const[err,setErr]=useState(false);
+  if(err||!src)return x(Placeholder,null);
+  return x('img',{src,alt:alt||'',onError:()=>setErr(true),style});
+}
+
+// ═══════════════════════════════════════════════════════════
+// LIGHTBOX
+// ═══════════════════════════════════════════════════════════
+function Lightbox({images,startIdx,label,onClose}){
+  const[idx,setIdx]=useState(startIdx||0);
+  const imgRef=useRef(null);
+  const panRef=useRef({x:0,y:0});
+  const zoomRef=useRef(1);
+  const brightRef=useRef(1);
+  const dragRef=useRef(null);
+  const rafRef=useRef(null);
+  const sliderRef=useRef(null);
+  const zoomLblRef=useRef(null);
+  const brightLblRef=useRef(null);
+  const[showBB,setShowBB]=useState(true);
+  const bboxRef=useRef(null);
+  const cur=images[idx]||images[0];
+
+  function applyT(){
+    if(!imgRef.current)return;
+    const{x,y}=panRef.current,z=zoomRef.current,b=brightRef.current;
+    imgRef.current.style.transform=`translate3d(${x}px,${y}px,0) scale(${z})`;
+    imgRef.current.style.filter=`brightness(${b})`;
+    if(zoomLblRef.current)zoomLblRef.current.textContent=z===1?'1×':z.toFixed(1)+'×';
+    if(brightLblRef.current)brightLblRef.current.textContent=b.toFixed(1)+'×';
+    // Update bbox
+    if(bboxRef.current&&cur.bbox&&showBB){
+      const b2=cur.bbox;
+      bboxRef.current.style.left=(b2.left*100)+'%';
+      bboxRef.current.style.top=(b2.top*100)+'%';
+      bboxRef.current.style.width=(b2.width*100)+'%';
+      bboxRef.current.style.height=(b2.height*100)+'%';
+    }
+  }
+  function resetT(){
+    panRef.current={x:0,y:0};zoomRef.current=1;brightRef.current=1;
+    if(sliderRef.current)sliderRef.current.value=100;
+    requestAnimationFrame(applyT);
+  }
+  useEffect(()=>{resetT();},[idx]);
+  useEffect(()=>{
+    function onKey(e){
+      if(e.key==='Escape')onClose();
+      if(e.key==='ArrowLeft')setIdx(i=>Math.max(0,i-1));
+      if(e.key==='ArrowRight')setIdx(i=>Math.min(images.length-1,i+1));
+    }
+    window.addEventListener('keydown',onKey);
+    return()=>window.removeEventListener('keydown',onKey);
+  },[images.length]);
+
+  function onWheel(e){
+    e.preventDefault();
+    const rect=e.currentTarget.getBoundingClientRect();
+    const cx=e.clientX-rect.left-rect.width/2;
+    const cy=e.clientY-rect.top-rect.height/2;
+    const prevZ=zoomRef.current;
+    const delta=e.deltaY<0?0.15:-0.15;
+    const newZ=Math.max(1,Math.min(5,prevZ+delta));
+    const sc=newZ/prevZ;
+    panRef.current={x:panRef.current.x*sc+cx*(1-sc),y:panRef.current.y*sc+cy*(1-sc)};
+    zoomRef.current=newZ;
+    if(rafRef.current)cancelAnimationFrame(rafRef.current);
+    rafRef.current=requestAnimationFrame(applyT);
+  }
+  function onPD(e){
+    if(zoomRef.current<=1)return;
+    dragRef.current={sx:e.clientX,sy:e.clientY,px:panRef.current.x,py:panRef.current.y};
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+  function onPM(e){
+    if(!dragRef.current)return;
+    const dx=e.clientX-dragRef.current.sx,dy=e.clientY-dragRef.current.sy;
+    const mx=(zoomRef.current-1)*500;
+    panRef.current={x:Math.max(-mx,Math.min(mx,dragRef.current.px+dx)),y:Math.max(-mx,Math.min(mx,dragRef.current.py+dy))};
+    if(rafRef.current)cancelAnimationFrame(rafRef.current);
+    rafRef.current=requestAnimationFrame(applyT);
+  }
+  function onPU(){dragRef.current=null;}
+  function onBright(e){brightRef.current=e.target.value/100;requestAnimationFrame(applyT);}
+
+  const hasBB=!!(cur&&cur.bbox);
+
+  return x('div',{className:'lb',onKeyDown:e=>e.stopPropagation()},
+    // Toolbar
+    x('div',{className:'lb-toolbar'},
+      x('div',{className:'lb-info'},
+        x('div',null,label||(cur?(cur.det||cur.path):'Image')),
+        x('div',{className:'lb-info-sub'},`${idx+1} / ${images.length}`)
+      ),
+      // Zoom controls
+      x('button',{className:'lb-btn-icon',onClick:()=>{zoomRef.current=Math.max(1,zoomRef.current-0.25);requestAnimationFrame(applyT);}},x('span',{style:{fontSize:16}},'-')),
+      x('button',{className:'lb-btn',onClick:resetT,ref:zoomLblRef},'1×'),
+      x('button',{className:'lb-btn-icon',onClick:()=>{zoomRef.current=Math.min(5,zoomRef.current+0.25);requestAnimationFrame(applyT);}},x('span',{style:{fontSize:16}},'+' )),
+      x('div',{style:{width:1,height:20,background:'rgba(255,255,255,0.1)',margin:'0 4px'}}),
+      // Brightness
+      x('div',{className:'lb-bright-wrap'},
+        x(Ic.sun),
+        x('input',{ref:sliderRef,type:'range',min:30,max:200,defaultValue:100,className:'lb-bright-slider',onInput:onBright}),
+        x('span',{ref:brightLblRef,className:'lb-bright-val'},'1.0×'),
+        x('button',{className:'lb-btn-icon',onClick:()=>{brightRef.current=1;if(sliderRef.current)sliderRef.current.value=100;requestAnimationFrame(applyT);}},x(Ic.refresh))
+      ),
+      x('div',{style:{width:1,height:20,background:'rgba(255,255,255,0.1)',margin:'0 4px'}}),
+      // BB toggle
+      hasBB&&x('button',{className:'lb-btn'+(showBB?' on':''),onClick:()=>setShowBB(s=>!s)},x(Ic.bb),' BB: '+(showBB?'On':'Off')),
+      // Close
+      x('button',{className:'lb-btn-icon',onClick:onClose,style:{marginLeft:8}},x(Ic.close))
+    ),
+    // Viewport
+    x('div',{className:'lb-vp',onWheel:onWheel},
+      x('div',{
+        className:'lb-transform',ref:imgRef,
+        onPointerDown:onPD,onPointerMove:onPM,onPointerUp:onPU,
+        style:{position:'relative'}
+      },
+        cur&&cur.path?x('img',{src:imgUrl(cur.path),alt:'',style:{display:'block'}}):x(Placeholder,{label:'No image'}),
+        hasBB&&x('div',{
+          ref:bboxRef,
+          className:'lb-bbox'+(showBB?' show':''),
+          style:cur.bbox?{
+            left:(cur.bbox.left*100)+'%',top:(cur.bbox.top*100)+'%',
+            width:(cur.bbox.width*100)+'%',height:(cur.bbox.height*100)+'%',
+          }:{}
+        })
+      ),
+      images.length>1&&x('button',{className:'lb-nav-btn prev',onClick:()=>setIdx(i=>Math.max(0,i-1)),disabled:idx===0},x(Ic.chevL)),
+      images.length>1&&x('button',{className:'lb-nav-btn next',onClick:()=>setIdx(i=>Math.min(images.length-1,i+1)),disabled:idx===images.length-1},x(Ic.chevR)),
+    ),
+    // Filmstrip
+    images.length>1&&x('div',{className:'lb-film'},
+      images.map((img,i)=>x('div',{key:i,className:'lb-thumb'+(i===idx?' active':''),onClick:()=>setIdx(i)},
+        img.path?x('img',{src:imgUrl(img.path),alt:''}):x('div',{style:{width:'100%',height:'100%',background:'rgba(255,255,255,0.05)'}})
+      )),
+      x('span',{className:'lb-count'},`${idx+1} / ${images.length}`)
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// CAROUSEL
+// ═══════════════════════════════════════════════════════════
+function Carousel({images,type,label,onImageClick}){
+  const slots=images.length>0?images:[null,null,null];
+  const display=slots.length<3?[...slots,...Array(3-slots.length).fill(null)]:slots;
+  return x(Fragment,null,
+    x('div',{className:'carousel-label '+(type==='healthy'?'healthy':'damaged')},
+      x('span',null,label)
+    ),
+    x('div',{className:'carousel-track'},
+      display.map((img,i)=>x('div',{
+        key:i,
+        className:'cr-slide '+(type==='healthy'?'healthy-s':'damaged-s'),
+        onClick:()=>img&&onImageClick&&onImageClick(i)
+      },
+        x('div',{className:'cr-img'},img&&img.path?x('img',{src:imgUrl(img.path),alt:''}):x(Placeholder,{label:type==='healthy'?'Healthy view '+(i+1):'Damage example '+(i+1)})),
+        img&&x('div',{className:'cr-label'},
+          x('div',{className:'cr-label-main'},img.det||(type==='healthy'?'Healthy':'Damaged')),
+          x('div',{className:'cr-label-sub'},img.camera||img.path||'')
+        )
+      ))
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// PART DETAIL VIEW (PDV)
+// ═══════════════════════════════════════════════════════════
+function PDV({rows,partName,fleet,onClose,onOpenLightbox}){
+  // All rows for this part
+  const[selDet,setSelDet]=useState(null);
+
+  // Collect healthy images (across all detections for this part)
+  const healthyImgs=useMemo(()=>{
+    const seen=new Set(),imgs=[];
+    for(const r of rows){
+      for(const h of r.images.healthy){
+        if(!seen.has(h.path)){seen.add(h.path);imgs.push({...h,det:'Healthy'});}
+      }
+    }
+    return imgs;
+  },[rows]);
+
+  // Collect all damage images
+  const damagedImgs=useMemo(()=>{
+    const imgs=[];
+    for(const r of rows){
+      for(const d of r.images.damaged){imgs.push({...d,det:r.detection});}
+    }
+    return imgs;
+  },[rows]);
+
+  // Filtered by selected detection
+  const filteredDamaged=selDet?damagedImgs.filter(i=>i.det===selDet):damagedImgs;
+
+  // Group rows by SEV
+  const bySev=useMemo(()=>{
+    const g={'SEV 1':[],'SEV 2':[],'SEV 3':[],'':[]};
+    for(const r of rows)(g[r.sev]||g['']).push(r);
+    return g;
+  },[rows]);
+
+  const sevKeys=['SEV 1','SEV 2','SEV 3',''];
+
+  return x('div',{className:'pdv-overlay'},
+    x('div',{className:'pdv-scrim',onClick:onClose}),
+    x('div',{className:'pdv'},
+      // Header
+      x('div',{className:'pdv-hd'},
+        x('button',{className:'pdv-back',onClick:onClose},x(Ic.chevL),' Back'),
+        x('div',{className:'pdv-title'},
+          x('h2',null,partName),
+          x('div',{className:'pdv-badges'},
+            rows[0]&&x('span',{className:'chip chip-veh'},rows[0].vehicle),
+            rows[0]&&x('span',{style:{fontSize:12,color:'var(--ink-3)'}},rows[0].category),
+          )
+        )
+      ),
+
+      // Stats strip
+      x('div',{className:'pdv-sec',style:{display:'flex',gap:24,background:'var(--bg)',paddingTop:14,paddingBottom:14}},
+        x('div',null,x('div',{style:{fontSize:22,fontWeight:700,color:'var(--navy)',lineHeight:1}},rows.length),x('div',{style:{fontSize:11,color:'var(--ink-3)',marginTop:3}},'damage types')),
+        x('div',null,x('div',{style:{fontSize:22,fontWeight:700,color:'var(--teal)',lineHeight:1}},rows.filter(r=>r.images.damaged.length).length),x('div',{style:{fontSize:11,color:'var(--ink-3)',marginTop:3}},'with examples')),
+        x('div',null,x('div',{style:{fontSize:22,fontWeight:700,color:'var(--s1)',lineHeight:1}},rows.filter(r=>r.sev==='SEV 1').length),x('div',{style:{fontSize:11,color:'var(--ink-3)',marginTop:3}},'SEV 1')),
+        damagedImgs.length>0&&x('div',null,x('div',{style:{fontSize:22,fontWeight:700,color:'var(--ink)',lineHeight:1}},damagedImgs.length),x('div',{style:{fontSize:11,color:'var(--ink-3)',marginTop:3}},'photos'))
+      ),
+
+      // Healthy carousel
+      x('div',{className:'pdv-sec'},
+        x('div',{className:'pdv-sec-title'},'HEALTHY REFERENCE'),
+        x(Carousel,{images:healthyImgs,type:'healthy',label:'Healthy views',
+          onImageClick:i=>onOpenLightbox(healthyImgs,i,'Healthy reference — '+partName)})
+      ),
+
+      // Damaged carousel
+      x('div',{className:'pdv-sec'},
+        x('div',{className:'pdv-sec-title'},'DAMAGE EXAMPLES'+(selDet?' · '+selDet:' · all types')),
+        x(Carousel,{images:filteredDamaged,type:'damaged',
+          label:(filteredDamaged.length||0)+' example'+(filteredDamaged.length!==1?'s':'')+(selDet?' of '+selDet:''),
+          onImageClick:i=>onOpenLightbox(filteredDamaged,i,selDet||partName)})
+      ),
+
+      // Damage lines list
+      x('div',{className:'pdv-sec',style:{borderBottom:'none'}},
+        x('div',{className:'pdv-sec-title'},'DAMAGE LINES'),
+        sevKeys.map(sk=>{
+          const r=bySev[sk];
+          if(!r||r.length===0)return null;
+          const cfg=SEV[sk];
+          return x('div',{key:sk,className:'dl-group'},
+            cfg&&x('div',{className:'dl-group-title'},
+              x('span',{className:'sev-badge '+cfg.cls},fleet?`${sk} · ${cfg.cust}`:sk),
+              x('span',{style:{color:'var(--ink-4)',fontSize:11}},cfg.int)
+            ),
+            r.map((row,i)=>{
+              const thumb=row.images.damaged[0]||row.images.healthy[0];
+              const isSelDet=selDet===row.detection;
+              return x('div',{
+                key:i,
+                className:'dl-row',
+                style:isSelDet?{borderColor:'var(--teal)',background:'#f0fdfa'}:{},
+                onClick:()=>{
+                  setSelDet(isSelDet?null:row.detection);
+                  if(row.images.damaged.length){
+                    // Show first image in lightbox
+                    // onOpenLightbox(row.images.damaged,0,row.detection+' · '+partName);
+                  }
+                }
+              },
+                x('div',{className:'dl-thumb'},thumb?x('img',{src:imgUrl(thumb.path),alt:'',style:{width:'100%',height:'100%',objectFit:'cover'}}):x(Ic.ph)),
+                x('div',{className:'dl-det'},
+                  x('div',{className:'dl-det-name'},row.detection),
+                  x('div',{className:'dl-det-meta'},row.orientation+(row.unit?` · ${row.unit}`:'')),
+                  row.images.damaged.length>0
+                    ?x('div',{className:'dl-det-imgs'},row.images.damaged.length+' damage example'+(row.images.damaged.length!==1?'s':''))
+                    :x('div',{className:'dl-det-noimgs'},'No example yet'),
+                ),
+                row.images.damaged.length>0&&x('button',{
+                  className:'lb-btn',
+                  style:{padding:'4px 10px',fontSize:11,color:'var(--teal)',borderColor:'rgba(13,148,136,0.3)'},
+                  onClick:e=>{e.stopPropagation();onOpenLightbox(row.images.damaged,0,row.detection+' · '+partName);}
+                },'View →')
+              );
+            })
+          );
+        })
+      )
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════════════════════
+function Overview({data,fleet}){
+  const sev1=data.filter(r=>r.sev==='SEV 1').length;
+  const sev2=data.filter(r=>r.sev==='SEV 2').length;
+  const sev3=data.filter(r=>r.sev==='SEV 3').length;
+  const total=data.length||1;
+  const withEx=data.filter(r=>r.images.damaged.length>0).length;
+  const withH=data.filter(r=>r.images.healthy.length>0).length;
+  const totalImgs=data.reduce((s,r)=>s+r.images.damaged.length,0);
+  return x('div',{className:'overview'},
+    // Act now / Can wait bar
+    x('div',{className:'ov-bar-wrap'},
+      x('div',{className:'ov-bar-label'},
+        x('span',{style:{color:'var(--s1)',fontWeight:700}},'Act now'),
+        x('span',{style:{color:'var(--ink-3)'}},total+' detectable damage types'),
+        x('span',{style:{color:'var(--s3)',fontWeight:700}},'Can wait')
+      ),
+      x('div',{className:'ov-bar'},
+        x('div',{className:'ov-bar-seg',style:{flex:sev1,background:'var(--s1)'}},sev1>0&&`SEV 1`),
+        x('div',{className:'ov-bar-seg',style:{flex:sev2,background:'var(--s2)'}},sev2>0&&`SEV 2`),
+        x('div',{className:'ov-bar-seg',style:{flex:sev3,background:'var(--s3)'}},sev3>0&&`SEV 3`),
+      )
+    ),
+    // SEV cards
+    x('div',{className:'ov-sev'},
+      [['SEV 1',sev1],['SEV 2',sev2],['SEV 3',sev3]].map(([sk,cnt])=>{
+        const c=SEV[sk];
+        return x('div',{key:sk,className:'ov-sev-card',style:{borderColor:c.bg}},
+          x('div',{className:'ov-sev-top',style:{background:c.bg}},
+            x('div',{className:'ov-sev-label',style:{color:c.color}},sk),
+            x('h3',{style:{color:c.color}},cnt),
+            x('div',{className:'ov-sev-customer',style:{color:c.color}},fleet?c.cust:c.int),
+            x('div',{className:'ov-sev-action',style:{color:c.color}},c.action)
+          ),
+          x('div',{className:'ov-sev-bottom'},
+            x('span',{style:{fontWeight:600,color:'var(--ink-2)'}},c.desc),
+            x('span',{style:{color:'var(--ink-4)',marginLeft:6}},Math.round(cnt/total*100)+'% of detections')
+          )
+        );
+      })
+    ),
+    // Stats
+    x('div',{className:'ov-stats'},
+      [{n:total,l:'Total detections'},{n:withEx,l:'With damage examples'},{n:withH,l:'With healthy refs'},{n:totalImgs,l:'Total example photos'}]
+        .map(({n,l},i)=>x('div',{key:i,className:'ov-stat'},x('div',{className:'ov-stat-num'},n.toLocaleString()),x('div',{className:'ov-stat-label'},l)))
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// DAMAGE LINES TAB
+// ═══════════════════════════════════════════════════════════
+function DamageLines({data,fleet,onSelectPart}){
+  const[sort,setSort]=useState({col:'sev',dir:1});
+  function toggleSort(col){setSort(s=>s.col===col?{col,dir:-s.dir}:{col,dir:1});}
+  const sorted=useMemo(()=>[...data].sort((a,b)=>{
+    const{col,dir}=sort;
+    const va=a[col]||'',vb=b[col]||'';
+    if(col==='sev'){
+      const si={'SEV 1':1,'SEV 2':2,'SEV 3':3,'':4};
+      return(si[va]||4)-(si[vb]||4);
+    }
+    return va.localeCompare(vb)*dir;
+  }),[data,sort]);
+
+  const cols=[{k:'carPart',l:'Part'},{k:'detection',l:'Damage type'},{k:'sev',l:'Severity'},{k:'category',l:'Category'},{k:'vehicle',l:'Vehicle'},{k:'images',l:'Examples'}];
+  function Th({k,l}){
+    const active=sort.col===k;
+    return x('th',{onClick:()=>toggleSort(k),style:active?{color:'var(--ink)'}:{}},
+      l,' ',active&&(sort.dir===1?'↑':'↓')
+    );
+  }
+  return x('div',{className:'tbl-wrap'},
+    x('table',null,
+      x('thead',null,x('tr',null,...cols.map(c=>x(Th,{key:c.k,...c})))),
+      x('tbody',null,sorted.map((row,i)=>{
+        const imgCount=row.images.damaged.length;
+        return x('tr',{key:i,onClick:()=>onSelectPart(row.carPart),style:{cursor:'pointer'}},
+          x('td',null,x('span',{style:{fontWeight:600}},row.carPart)),
+          x('td',null,row.detection),
+          x('td',null,x(SevBadge,{sev:row.sev,fleet})),
+          x('td',{style:{color:'var(--ink-3)'}},row.category),
+          x('td',null,x('span',{className:'chip chip-veh',style:{fontSize:11,padding:'2px 7px'}},row.vehicle)),
+          x('td',null,imgCount>0&&x('span',{className:'img-count',style:{color:'var(--teal)'}},x('span',{className:'img-dot'}),imgCount,' photo'+(imgCount!==1?'s':'')))
+        );
+      }))
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// CAR PARTS TAB
+// ═══════════════════════════════════════════════════════════
+function CarParts({data,fleet,onSelectPart}){
+  const[open,setOpen]=useState({});
+  const groups=useMemo(()=>{
+    const g={};
+    for(const r of data)(g[r.carPart]=g[r.carPart]||[]).push(r);
+    return Object.entries(g).sort(([a],[b])=>a.localeCompare(b));
+  },[data]);
+  function toggle(p){setOpen(o=>({...o,[p]:!o[p]}));}
+  function covBadge(rows){
+    const total=rows.length,withEx=rows.filter(r=>r.images.damaged.length>0).length;
+    if(withEx===0)return x('span',{className:'part-cov cov-none'},'No examples');
+    if(withEx===total)return x('span',{className:'part-cov cov-full'},'Fully covered');
+    return x('span',{className:'part-cov cov-part'},`${withEx}/${total} covered`);
+  }
+  return x('div',{className:'parts-wrap'},
+    groups.map(([part,rows])=>{
+      const isOpen=open[part];
+      const worstSev=rows.some(r=>r.sev==='SEV 1')?'SEV 1':rows.some(r=>r.sev==='SEV 2')?'SEV 2':'SEV 3';
+      return x('div',{key:part,className:'part-group'},
+        x('div',{className:'part-group-hd',onClick:()=>toggle(part)},
+          x(Ic.chevD),
+          x('span',{className:'part-group-name'},part),
+          x('div',{className:'part-group-meta'},
+            covBadge(rows),
+            x(SevBadge,{sev:worstSev,fleet}),
+            x('span',null,rows.length+' type'+(rows.length!==1?'s':'')),
+          ),
+          x('button',{
+            onClick:e=>{e.stopPropagation();onSelectPart(part);},
+            style:{fontSize:12,color:'var(--teal)',padding:'4px 10px',border:'1.5px solid rgba(13,148,136,0.3)',borderRadius:6}
+          },'View detail')
+        ),
+        isOpen&&x('div',{className:'part-detections'},
+          rows.map((r,i)=>x('div',{key:i,className:'det-row',onClick:()=>onSelectPart(part)},
+            x(SevBadge,{sev:r.sev,fleet}),
+            x('span',{className:'det-row-name'},r.detection),
+            r.images.damaged.length>0&&x('span',{className:'det-row-imgs'},r.images.damaged.length+' example'+(r.images.damaged.length!==1?'s':''))
+          ))
+        )
+      );
+    })
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// BROWSE TAB
+// ═══════════════════════════════════════════════════════════
+function Browse({data,fleet,onSelectPart,onOpenLightbox}){
+  // Sort: with images first
+  const sorted=useMemo(()=>[...data].sort((a,b)=>{
+    const ha=a.images.damaged.length>0?1:0,hb=b.images.damaged.length>0?1:0;
+    return hb-ha||a.carPart.localeCompare(b.carPart);
+  }),[data]);
+  return x('div',{className:'browse-grid'},
+    sorted.map((row,i)=>{
+      const img=row.images.damaged[0]||row.images.healthy[0];
+      const cfg=SEV[row.sev];
+      return x('div',{key:i,className:'card',onClick:()=>onSelectPart(row.carPart)},
+        x('div',{className:'card-img'},
+          img?x(ImgOrPh,{src:imgUrl(img.path),alt:row.detection}):x(Placeholder,{label:row.detection}),
+          cfg&&x('span',{
+            className:'card-sev',
+            style:{background:fleet?cfg.color+'22':cfg.bg,color:cfg.color,border:`1px solid ${cfg.color}33`}
+          },fleet?cfg.cust:row.sev)
+        ),
+        x('div',{className:'card-body'},
+          x('div',{className:'card-det'},row.detection),
+          x('div',{className:'card-part'},row.carPart)
+        ),
+        x('div',{className:'card-footer'},
+          x('span',null,row.vehicle),
+          row.images.damaged.length>0
+            ?x('span',{style:{color:'var(--teal)',fontWeight:600},onClick:e=>{e.stopPropagation();onOpenLightbox(row.images.damaged,0,row.detection+' · '+row.carPart);}},row.images.damaged.length+' photo'+(row.images.damaged.length!==1?'s':''))
+            :x('span',null,'No examples yet')
+        )
+      );
+    })
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// FILTER BAR
+// ═══════════════════════════════════════════════════════════
+function FilterBar({data,filters,setFilters,totalVisible}){
+  const cats=useMemo(()=>[...new Set(data.map(r=>r.category))].filter(Boolean).sort(),[data]);
+  const dets=useMemo(()=>[...new Set(data.map(r=>r.detection))].filter(Boolean).sort(),[data]);
+  const oris=useMemo(()=>[...new Set(data.map(r=>r.orientation))].filter(Boolean).sort(),[data]);
+  function toggleSev(s){setFilters(f=>{const n=new Set(f.sevs);n.has(s)?n.delete(s):n.add(s);return{...f,sevs:n};});}
+  const sevCounts={'SEV 1':0,'SEV 2':0,'SEV 3':0};
+  for(const r of data)(sevCounts[r.sev]||(sevCounts[r.sev]=0));
+  for(const r of data)sevCounts[r.sev]=(sevCounts[r.sev]||0)+1;
+  return x('div',{className:'filterbar'},
+    x('div',{className:'search-wrap'},
+      x(Ic.search),
+      x('input',{className:'search-input',placeholder:'Search damage lines…',value:filters.search,onChange:e=>setFilters(f=>({...f,search:e.target.value}))})
+    ),
+    x('div',{className:'filter-sep'}),
+    ['SEV 1','SEV 2','SEV 3'].map(s=>x('button',{
+      key:s,
+      className:'filter-pill '+sevClass(s)+(filters.sevs.has(s)?' active':''),
+      onClick:()=>toggleSev(s)
+    },s+(sevCounts[s]?' '+sevCounts[s]:'')+'')),
+    x('div',{className:'filter-sep'}),
+    x('select',{className:'filter-select',value:filters.category,onChange:e=>setFilters(f=>({...f,category:e.target.value}))},
+      x('option',{value:''},'Category'),
+      cats.map(c=>x('option',{key:c,value:c},c))
+    ),
+    x('select',{className:'filter-select',value:filters.detection,onChange:e=>setFilters(f=>({...f,detection:e.target.value}))},
+      x('option',{value:''},'Damage type'),
+      dets.map(d=>x('option',{key:d,value:d},d))
+    ),
+    x('select',{className:'filter-select',value:filters.orientation,onChange:e=>setFilters(f=>({...f,orientation:e.target.value}))},
+      x('option',{value:''},'Orientation'),
+      oris.map(o=>x('option',{key:o,value:o},o))
+    ),
+    x('div',{className:'filter-sep'}),
+    x('button',{className:'filter-examples'+(filters.withExamples?' active':''),onClick:()=>setFilters(f=>({...f,withExamples:!f.withExamples}))},
+      x(Ic.img),' With examples',x('span',{className:'filter-count'},totalVisible)
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════════
+const NAV=[
+  {id:'overview',label:'Overview',Icon:Ic.grid},
+  {id:'lines',label:'Damage lines',Icon:Ic.list},
+  {id:'parts',label:'Car parts',Icon:Ic.car},
+  {id:'browse',label:'Browse',Icon:Ic.img},
+];
+function Sidebar({tab,setTab,fleet,data}){
+  const[showShare,setShowShare]=useState(false);
+  function copyFleetLink(f){
+    const h=f?`#fleet=${f}`:'#';
+    navigator.clipboard.writeText(location.href.split('#')[0]+h).then(()=>{setShowShare(false);});
+  }
+  return x('div',{className:'sidebar'},
+    x('div',{className:'sidebar-logo'},
+      x('div',{className:'sidebar-logo-mark'},
+        x('svg',{width:28,height:28,viewBox:'0 0 28 28',fill:'none'},
+          x('rect',{width:28,height:28,rx:6,fill:'#0d9488'}),
+          x('path',{d:'M7 14l5 5 9-9',stroke:'white',strokeWidth:2.5,strokeLinecap:'round',strokeLinejoin:'round'})
+        ),
+        x('span',null,'UVeye')
+      ),
+      x('div',{className:'sidebar-logo-sub'},'Damage Dictionary')
+    ),
+    fleet&&x('div',{className:'sidebar-fleet'},
+      x('div',{className:'sidebar-fleet-name'},'Fleet view'),
+      x('div',{className:'sidebar-fleet-val'},FLEETS[fleet]||fleet)
+    ),
+    x('div',{className:'sidebar-nav'},
+      NAV.map(({id,label,Icon})=>x('div',{
+        key:id,className:'nav-item'+(tab===id?' active':''),onClick:()=>setTab(id)
+      },x(Icon),label))
+    ),
+    !fleet&&x('div',{className:'sidebar-footer'},
+      x('div',{style:{position:'relative'}},
+        x('button',{className:'sidebar-share',onClick:()=>setShowShare(s=>!s)},x(Ic.share),' Share fleet link'),
+        showShare&&x('div',{style:{position:'absolute',bottom:'100%',left:0,right:0,background:'var(--surface)',border:'1.5px solid var(--line)',borderRadius:8,boxShadow:'0 4px 16px rgba(0,0,0,0.12)',overflow:'hidden',marginBottom:4}},
+          Object.entries(FLEETS).map(([k,v])=>x('div',{
+            key:k,
+            onClick:()=>copyFleetLink(k),
+            style:{padding:'9px 14px',fontSize:12.5,cursor:'pointer',borderBottom:'1px solid var(--line)',color:'var(--ink-2)'}
+          },v))
+        )
+      )
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// APP ROOT
+// ═══════════════════════════════════════════════════════════
+function App(){
+  const[data,setData]=useState(null);
+  const[error,setError]=useState(null);
+  const[tab,setTab]=useState('browse');
+  const[activePart,setActivePart]=useState(null);
+  const[lightbox,setLightbox]=useState(null);
+  const[filters,setFilters]=useState({search:'',sevs:new Set(),withExamples:false,category:'',detection:'',orientation:''});
+
+  // Parse fleet from URL hash
+  const fleet=useMemo(()=>{
+    const h=window.location.hash;
+    const m=h.match(/fleet=([a-z]+)/);
+    return m?m[1]:null;
+  },[]);
+
+  // Load data
+  useEffect(()=>{
+    fetch(LIB_URL)
+      .then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();})
+      .then(d=>setData(d))
+      .catch(e=>setError(e.message));
+  },[]);
+
+  // Filter
+  const filtered=useMemo(()=>{
+    if(!data)return[];
+    return data.filter(row=>{
+      if(fleet&&!row.images.damaged.length&&!row.images.healthy.length)return false;
+      if(filters.withExamples&&!row.images.damaged.length)return false;
+      if(filters.sevs.size&&!filters.sevs.has(row.sev))return false;
+      if(filters.category&&row.category!==filters.category)return false;
+      if(filters.detection&&row.detection!==filters.detection)return false;
+      if(filters.orientation&&row.orientation!==filters.orientation)return false;
+      if(filters.search){
+        const q=norm(filters.search);
+        return norm(row.carPart).includes(q)||norm(row.detection).includes(q)||norm(row.category).includes(q);
+      }
+      return true;
+    });
+  },[data,filters,fleet]);
+
+  const withExCount=useMemo(()=>filtered.filter(r=>r.images.damaged.length>0).length,[filtered]);
+
+  // PDV rows for active part
+  const pdvRows=useMemo(()=>activePart?filtered.filter(r=>r.carPart===activePart):[],[activePart,filtered]);
+
+  function openLightbox(images,idx,label){setLightbox({images,idx,label});}
+
+  if(error)return x('div',{className:'loading'},
+    x('div',{style:{color:'var(--s1)',fontWeight:600,fontSize:14}},'Failed to load data'),
+    x('div',{style:{fontSize:12,color:'var(--ink-3)',marginTop:4}},error),
+    x('div',{style:{fontSize:12,color:'var(--ink-4)',marginTop:12,maxWidth:320,textAlign:'center'}},'Push damage-library.json to the truck-catalog-images GitHub repo to load the full catalog.')
+  );
+  if(!data)return x('div',{className:'loading'},x('div',{className:'spinner'}),x('div',null,'Loading damage catalog…'));
+
+  return x(Fragment,null,
+    x(Sidebar,{tab,setTab,fleet,data:filtered}),
+    x('div',{className:'main'},
+      fleet&&x('div',{className:'fleet-banner'},
+        x('div',{className:'fleet-banner-name'},
+          x('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,style:{opacity:.6}},x('path',{d:'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'}),x('circle',{cx:9,cy:7,r:4}),x('path',{d:'M23 21v-2a4 4 0 00-3-3.87'}),x('path',{d:'M16 3.13a4 4 0 010 7.75'})),
+          FLEETS[fleet]||fleet,' · Fleet view'
+        ),
+        x('div',{className:'fleet-banner-actions'},
+          x('a',{href:'#'},`← Internal view`)
+        )
+      ),
+      x(FilterBar,{data:data,filters,setFilters,totalVisible:withExCount}),
+      x('div',{className:'content'},
+        x('div',{className:'section-hd'},
+          x('h2',null,tab==='overview'?'Overview':tab==='lines'?'Damage lines':tab==='parts'?'Car parts':'Browse catalog'),
+          x('small',null,filtered.length.toLocaleString()+' damage types')
+        ),
+        tab==='overview'&&x(Overview,{data:filtered,fleet}),
+        tab==='lines'&&x(DamageLines,{data:filtered,fleet,onSelectPart:setActivePart}),
+        tab==='parts'&&x(CarParts,{data:filtered,fleet,onSelectPart:setActivePart}),
+        tab==='browse'&&x(Browse,{data:filtered,fleet,onSelectPart:setActivePart,onOpenLightbox:openLightbox}),
+      )
+    ),
+    activePart&&pdvRows.length>0&&x(PDV,{rows:pdvRows,partName:activePart,fleet,onClose:()=>setActivePart(null),onOpenLightbox:openLightbox}),
+    lightbox&&x(Lightbox,{...lightbox,onClose:()=>setLightbox(null)})
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(x(App));
+})();
+</script>
+</body>
+</html>
