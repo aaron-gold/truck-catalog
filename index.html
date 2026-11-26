@@ -571,7 +571,7 @@ function PDV({rows,partName,fleet,onClose,onOpenLightbox}){
               const thumb=row.images.damaged[0]||row.images.healthy[0];const isSel=selDet===row.detection;
               return x('div',{key:i,className:'dl-row',style:isSel?{borderColor:'var(--teal)',background:'var(--zone-active-soft)'}:{},onClick:()=>setSelDet(isSel?null:row.detection)},
                 x('div',{className:'dl-thumb'},thumb?x('img',{src:imgUrl(thumb.path),alt:'',style:{width:'100%',height:'100%',objectFit:'cover'}}):x(Ic.ph)),
-                x('div',{className:'dl-det'},x('div',{className:'dl-det-name'},row.detection),x('div',{className:'dl-det-meta'},row.orientation),row.images.damaged.length>0?x('div',{className:'dl-det-imgs'},row.images.damaged.length+' example'+(row.images.damaged.length!==1?'s','')):x('div',{className:'dl-det-noimgs'},'No example yet')),
+                x('div',{className:'dl-det'},x('div',{className:'dl-det-name'},row.detection),x('div',{className:'dl-det-meta'},row.orientation),row.images.damaged.length>0?x('div',{className:'dl-det-imgs'},row.images.damaged.length+' example'+(row.images.damaged.length!==1?'s':'')):x('div',{className:'dl-det-noimgs'},'No example yet')),
                 row.images.damaged.length>0&&x('button',{className:'lb-btn',style:{padding:'4px 10px',fontSize:11,color:'var(--teal)',borderColor:'rgba(13,148,136,0.3)'},onClick:e=>{e.stopPropagation();onOpenLightbox(row.images.damaged,0,row.detection+' · '+partName);}},x(Ic.chevR))
               );
             })
@@ -719,7 +719,7 @@ function DamageLines({data,fleet,onSelectPart}){
         x('td',null,x(SevBadge,{sev:row.sev,fleet})),
         x('td',{style:{color:'var(--ink-3)'}},row.category),
         x('td',null,x('span',{className:'chip chip-veh',style:{fontSize:11,padding:'2px 7px'}},row.vehicle)),
-        x('td',null,ic>0&&x('span',{style:{color:'var(--teal)',fontWeight:600,fontSize:12}},ic+' photo'+(ic!==1?'s','')))
+        x('td',null,ic>0&&x('span',{style:{color:'var(--teal)',fontWeight:600,fontSize:12}},ic+' photo'+(ic!==1?'s':'')))
       );}))
     )
   );
@@ -744,7 +744,7 @@ function CarParts({data,fleet,onSelectPart}){
           x('button',{onClick:e=>{e.stopPropagation();onSelectPart(part);},style:{fontSize:12,color:'var(--teal)',padding:'4px 10px',border:'1.5px solid rgba(13,148,136,0.3)',borderRadius:6}},'View detail')
         ),
         isOpen&&x('div',{className:'part-detections'},
-          rows.map((r,i)=>x('div',{key:i,className:'det-row',onClick:()=>onSelectPart(part)},x(SevBadge,{sev:r.sev,fleet}),x('span',{className:'det-row-name'},r.detection),r.images.damaged.length>0&&x('span',{style:{fontSize:11.5,color:'var(--teal)',fontWeight:600}},r.images.damaged.length+' example'+(r.images.damaged.length!==1?'s','')))))
+          rows.map((r,i)=>x('div',{key:i,className:'det-row',onClick:()=>onSelectPart(part)},x(SevBadge,{sev:r.sev,fleet}),x('span',{className:'det-row-name'},r.detection),r.images.damaged.length>0&&x('span',{style:{fontSize:11.5,color:'var(--teal)',fontWeight:600}},r.images.damaged.length+' example'+(r.images.damaged.length!==1?'s':''))))
         )
       );
     })
@@ -768,7 +768,7 @@ function Browse({data,fleet,onSelectPart,onOpenLightbox}){
         x('div',{className:'card-footer'},
           x('span',null,row.vehicle),
           row.images.damaged.length>0
-            ?x('span',{style:{color:'var(--teal)',fontWeight:600,cursor:'pointer'},onClick:e=>{e.stopPropagation();onOpenLightbox(row.images.damaged,0,row.detection+' · '+row.carPart);}},row.images.damaged.length+' photo'+(row.images.damaged.length!==1?'s',''))
+            ?x('span',{style:{color:'var(--teal)',fontWeight:600,cursor:'pointer'},onClick:e=>{e.stopPropagation();onOpenLightbox(row.images.damaged,0,row.detection+' · '+row.carPart);}},row.images.damaged.length+' photo'+(row.images.damaged.length!==1?'s':''))
             :x('span',null,'No examples yet')
         )
       );
