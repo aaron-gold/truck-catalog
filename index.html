@@ -255,7 +255,7 @@ const {createElement:x,useState,useEffect,useRef,useCallback,useMemo,Fragment}=R
 // ═══════════════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════
-const LIB_URL='https://raw.githubusercontent.com/Aaron-gold/truck-catalog-images/main/damage-library.json';
+const LIB_URL='https://raw.githubusercontent.com/aaron-gold/truck-catalog/main/damage-library.json';
 const IMG_BASE='https://raw.githubusercontent.com/Aaron-gold/truck-catalog-images/main/images/';
 const imgUrl=p=>IMG_BASE+p;
 
@@ -943,7 +943,7 @@ function App(){
   if(error)return x('div',{className:'loading'},
     x('div',{style:{color:'var(--s1)',fontWeight:600,fontSize:14}},'Failed to load data'),
     x('div',{style:{fontSize:12,color:'var(--ink-3)',marginTop:4}},error),
-    x('div',{style:{fontSize:12,color:'var(--ink-4)',marginTop:12,maxWidth:320,textAlign:'center'}},'Push damage-library.json to the truck-catalog-images GitHub repo to load the full catalog.')
+    x('div',{style:{fontSize:12,color:'var(--ink-4)',marginTop:12,maxWidth:320,textAlign:'center'}},'Data file not found. Make sure damage-library.json is uploaded to the truck-catalog repo root.')
   );
   if(!data)return x('div',{className:'loading'},x('div',{className:'spinner'}),x('div',null,'Loading damage catalog…'));
 
@@ -980,5 +980,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(x(App));
 })();
 </script>
 </body>
-  
 </html>
