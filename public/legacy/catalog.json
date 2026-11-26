@@ -74,7 +74,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Healthy_01.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -86,7 +86,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Healthy_02.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -98,7 +98,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Healthy_03.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_12",
@@ -110,7 +110,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Missing_01.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Missing",
     "isHealthy": false,
     "camera": "at_cam_01",
@@ -127,7 +127,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Healthy_01.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -139,7 +139,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Healthy_04.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -151,7 +151,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Healthy_05.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -163,7 +163,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Healthy_06.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_12",
@@ -175,7 +175,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Missing_02.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Missing",
     "isHealthy": false,
     "camera": "at_cam_01",
@@ -192,7 +192,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Healthy_02.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -204,7 +204,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Healthy_03.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -216,7 +216,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Healthy_04.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_12",
@@ -228,7 +228,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Missing_01.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Missing",
     "isHealthy": false,
     "camera": "at_cam_01",
@@ -245,7 +245,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Healthy_07.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -257,7 +257,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Healthy_08.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_12",
@@ -269,7 +269,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Broken_01.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Broken",
     "isHealthy": false,
     "camera": "at_cam_12",
@@ -286,7 +286,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Broken_02.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Broken",
     "isHealthy": false,
     "camera": "at_cam_12",
@@ -303,7 +303,7 @@
   {
     "path": "Truck/Mudflap - Drive - Trailer - Broken_03.jpg",
     "truckTrailer": "Truck",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Broken",
     "isHealthy": false,
     "camera": "at_cam_12",
@@ -320,7 +320,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Healthy_05.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_01",
@@ -332,7 +332,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Healthy_06.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Healthy",
     "isHealthy": true,
     "camera": "at_cam_12",
@@ -344,7 +344,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Broken_01.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Broken",
     "isHealthy": false,
     "camera": "at_cam_12",
@@ -361,7 +361,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Broken_02.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Broken",
     "isHealthy": false,
     "camera": "at_cam_12",
@@ -378,7 +378,7 @@
   {
     "path": "Trailer/Mudflap - Drive - Trailer - Broken_03.jpg",
     "truckTrailer": "Trailer",
-    "carPart": "Mudflap  - Drive  / Trailer",
+    "carPart": "Mudflap - Drive / Trailer",
     "condition": "Broken",
     "isHealthy": false,
     "camera": "at_cam_12",

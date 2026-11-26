@@ -1,7 +1,7 @@
 window.claude = {
   use(capability) {
     if (capability === 'mcp') {
-      return fetch('/sheets-data.json')
+      return fetch('/legacy/sheets-data.json')
         .then((r) => r.json())
         .then((rows) => ({
           watchTool(_server, _tool, _input, callback) {

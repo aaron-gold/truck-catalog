@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Truck Damage Dictionary · UVeye</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/legacy/app-styles.css">
+  <style>
+    :root { color-scheme: light; box-sizing: border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px) }
+    html { scroll-padding-top: env(safe-area-inset-top,0px) }
+    body { margin: 0; padding: 0; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; background: #fff; color: #000 }
+    img { max-width: 100% }
+    [hidden]:not([hidden=until-found i]) { display: none !important }
+    /* Print button removed from the detail panels (rendered by app-bundle.js) */
+    .dv-pr { display: none !important }
+    /* Photo viewer: fit the whole photo, GPU-smooth zoom/pan (see viewer-zoom.js) */
+  .lb-stage { overflow: hidden; }
+  .lb-vp { flex: 1; align-self: stretch; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .lb-imgc { position: relative; transform-origin: 0 0; will-change: transform; max-width: 100%; border-radius: 4px; overflow: visible; }
+  .lb-imgc.lbz-anim { transition: transform .18s ease-out; }
+  .lb-imgc.lbz-moving { transition: none; }
+  .lb-imgc .ph-img { width: auto; max-width: 100%; max-height: calc(100vh - 170px); aspect-ratio: auto; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
+  .lb-ctrl::after { content: "Scroll or pinch to zoom · drag to move · double-click to zoom"; font-size: 12px; color: rgba(255,255,255,.5); margin-left: auto; }
+  @media (max-width: 700px) { .lb-ctrl::after { display: none; } }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- 1. Catalog data — regular script runs synchronously before modules.
+       Images use GitHub CDN. Add /images/<path> local overrides in public/images/ -->
+  <script src="/legacy/catalog-init.js"></script>
+
+  <!-- 2. Claude runtime polyfill — module; runs before the app bundle -->
+  <script type="module" src="/legacy/claude-runtime.js"></script>
+
+  <!-- 3. Main compiled React app — ES module -->
+  <script type="module" src="/legacy/app-bundle.js"></script>
+  <script src="/legacy/viewer-zoom.js?v=3"></script>
+</body>
+</html>
