@@ -406,6 +406,38 @@ body>.lds-page{padding:0!important;height:100vh;display:flex!important;flex-dire
 .zone-overlay{position:absolute;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:all .15s}
 .zone-overlay:hover{background:rgba(92,100,238,.2);border-color:rgba(92,100,238,.5)}
 .zone-overlay.active{background:rgba(92,100,238,.25);border-color:var(--bs-primary)}
+/* Dark mode */
+body.dark-mode{--bs-body-bg:#0f1a24;--bs-body-color:#c9d1d9;--bs-secondary-color:#8b949e;--bs-border-color:#30363d;--bs-card-bg:#1a2535;color-scheme:dark}
+body.dark-mode .card{background:#1a2535!important;border-color:#30363d}
+body.dark-mode .bg-white{background:#1a2535!important}
+body.dark-mode #app-sidebar{background:#070f17!important}
+body.dark-mode .border-bottom{border-color:#30363d!important}
+body.dark-mode .table{--bs-table-bg:#1a2535;--bs-table-striped-bg:#1e2d3f;color:#c9d1d9}
+body.dark-mode .table thead{--bs-table-bg:#0f1a24}
+body.dark-mode .btn-light{background:#21303f;border-color:#30363d;color:#c9d1d9}
+body.dark-mode .form-control,body.dark-mode .form-select{background:#0f1a24;border-color:#30363d;color:#c9d1d9}
+body.dark-mode .text-muted{color:#8b949e!important}
+body.dark-mode .text-dark{color:#c9d1d9!important}
+body.dark-mode .accordion-item{background:#1a2535;border-color:#30363d}
+body.dark-mode .accordion-button{background:#1a2535;color:#c9d1d9}
+body.dark-mode .accordion-button:not(.collapsed){background:#1e2d3f}
+body.dark-mode .list-group-item{background:#1a2535;border-color:#30363d;color:#c9d1d9}
+body.dark-mode img.truck-diagram{filter:invert(.85)!important}
+/* SEV card left border highlight */
+.sev-card-1{border-left:4px solid var(--bs-danger)!important}
+.sev-card-2{border-left:4px solid var(--bs-warning)!important}
+.sev-card-3{border-left:4px solid var(--bs-secondary)!important}
+/* Category bar */
+.cat-bar{height:4px;border-radius:2px;opacity:.8;min-width:4px}
+/* Act now arrow */
+.act-now-arrow{position:relative;height:24px;display:flex;align-items:center}
+.act-now-arrow::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);border:6px solid transparent;border-left-color:var(--bs-secondary);margin-right:-2px}
+/* Feedback modal */
+.feedback-fab{position:fixed;bottom:72px;right:16px;z-index:300;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer}
+/* Coverage table */
+.coverage-dot-yes{color:var(--bs-success)}
+.coverage-dot-no{color:var(--bs-secondary);opacity:.4}
+
 /* SEV bar segments */
 .sev-bar-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;transition:flex .3s;min-width:40px;overflow:hidden;white-space:nowrap}
 /* Card image aspect */
@@ -449,6 +481,7 @@ body>.lds-page{padding:0!important;height:100vh;display:flex!important;flex-dire
     <button class="btn btn-sm text-secondary w-100 text-start px-2 py-1" id="dark-mode-btn">
       <i class="mdi mdi-moon-waning-crescent me-2"></i>Dark mode
     </button>
+    <button class="btn btn-sm text-secondary w-100 text-start px-2 py-1" id="feedback-sidebar-btn"><i class="mdi mdi-comment-plus-outline me-2"></i>Submit feedback</button>
     <button class="btn btn-sm text-secondary w-100 text-start px-2 py-1" id="share-link-btn">
       <i class="mdi mdi-share-variant-outline me-2"></i>Share fleet link
     </button>
@@ -555,11 +588,11 @@ function ImgOrPh({src,alt,className}){
 // ══ LIGHTBOX ════════════════════════════════════
 function Lightbox({images,startIdx,label,onClose}){
   const[idx,setIdx]=useState(startIdx||0);
-  const imgRef=useRef(null),panRef=useRef({x:0,y:0}),zoomRef=useRef(1),brightRef=useRef(1),dragRef=useRef(null),rafRef=useRef(null),sliderRef=useRef(null);
+  const imgRef=useRef(null),panRef=useRef({x:0,y:0}),zoomRef=useRef(1),brightRef=useRef(1.5),dragRef=useRef(null),rafRef=useRef(null),sliderRef=useRef(null);
   const[showBB,setShowBB]=useState(true);
   const cur=images[idx]||images[0];
   function applyT(){if(!imgRef.current)return;const{x:px,y:py}=panRef.current;imgRef.current.style.transform=`translate3d(${px}px,${py}px,0) scale(${zoomRef.current})`;imgRef.current.style.filter=`brightness(${brightRef.current})`;}
-  function resetT(){panRef.current={x:0,y:0};zoomRef.current=1;brightRef.current=1;if(sliderRef.current)sliderRef.current.value=100;requestAnimationFrame(applyT);}
+  function resetT(){panRef.current={x:0,y:0};zoomRef.current=1;brightRef.current=1;if(sliderRef.current)sliderRef.current.value=150;requestAnimationFrame(applyT);}
   useEffect(()=>{resetT()},[idx]);
   useEffect(()=>{const ok=e=>{if(e.key==='Escape')onClose();if(e.key==='ArrowLeft')setIdx(i=>Math.max(0,i-1));if(e.key==='ArrowRight')setIdx(i=>Math.min(images.length-1,i+1));};window.addEventListener('keydown',ok);return()=>window.removeEventListener('keydown',ok);},[]);
   function onWheel(e){e.preventDefault();const r=e.currentTarget.getBoundingClientRect(),cx=e.clientX-r.left-r.width/2,cy=e.clientY-r.top-r.height/2,pz=zoomRef.current,nz=Math.max(1,Math.min(5,pz+(e.deltaY<0?.15:-.15))),sc=nz/pz;panRef.current={x:panRef.current.x*sc+cx*(1-sc),y:panRef.current.y*sc+cy*(1-sc)};zoomRef.current=nz;if(rafRef.current)cancelAnimationFrame(rafRef.current);rafRef.current=requestAnimationFrame(applyT);}
@@ -573,7 +606,7 @@ function Lightbox({images,startIdx,label,onClose}){
       x('button',{className:'btn btn-sm btn-outline-secondary text-white',onClick:()=>{zoomRef.current=Math.min(5,zoomRef.current+.25);requestAnimationFrame(applyT);}},'+'),
       x('div',{className:'d-flex align-items-center gap-2'},
         x('i',{className:'mdi mdi-brightness-6 text-secondary'}),
-        x('input',{ref:sliderRef,type:'range',min:30,max:200,defaultValue:100,className:'form-range',style:{width:80},onInput:e=>{brightRef.current=e.target.value/100;requestAnimationFrame(applyT);}})
+        x('input',{ref:sliderRef,type:'range',min:30,max:200,defaultValue:150,className:'form-range',style:{width:80},onInput:e=>{brightRef.current=e.target.value/100;requestAnimationFrame(applyT);}})
       ),
       cur?.bbox&&x('button',{className:'btn btn-sm '+(showBB?'btn-warning':'btn-outline-secondary text-white'),onClick:()=>setShowBB(s=>!s)},x('i',{className:'mdi mdi-selection-drag me-1'}),'BB'),
       x('button',{className:'btn btn-sm btn-outline-secondary text-white ms-2',onClick:onClose},x('i',{className:'mdi mdi-close'}))
@@ -661,62 +694,120 @@ function PDV({rows,partName,fleet,onClose,onOpenLightbox}){
 }
 
 // ══ OVERVIEW ════════════════════════════════════
+const SEV_CFG={
+  'SEV 1':{cls:'danger',action:'Ground it',desc:'Safety, compliance or out-of-service risk',advice:"Don't dispatch until it's fixed.",typical:'Tire damage and low tread, ABS and brake warnings, air and underbody leaks, windshield cracks, lights.'},
+  'SEV 2':{cls:'warning',action:'Schedule PM',desc:'Significant issue',advice:'Highly recommended to schedule preventive maintenance.',typical:'Marginal tread, aero kits, IFTA sticker, vents, items due for service.'},
+  'SEV 3':{cls:'secondary',action:'Next service',desc:'Minor issue',advice:'Fix during regular maintenance.',typical:'Body dents, bends and scratches, cosmetic items.'},
+};
 function Overview({data,fleet,onSetSevFilter}){
-  const s1=data.filter(r=>r.sev==='SEV 1').length,s2=data.filter(r=>r.sev==='SEV 2').length,s3=data.filter(r=>r.sev==='SEV 3').length;
-  const total=data.length||1,withEx=data.filter(r=>r.images.damaged.length>0).length,totalImgs=data.reduce((s,r)=>s+r.images.damaged.length,0);
-  return x('div',{className:'dashboard-container'},
-    x('div',{className:'row g-3 mt-1'},
-      [
-        {n:s1,l:fleet?'Grounding':'SEV 1 · Ground it',sub:'Safety & compliance',cls:'danger',icon:'mdi-alert-circle'},
-        {n:s2,l:fleet?'High impact':'SEV 2 · Schedule PM',sub:'Significant issues',cls:'warning',icon:'mdi-alert'},
-        {n:s3,l:fleet?'Cosmetic':'SEV 3 · Next service',sub:'Minor & cosmetic',cls:'success',icon:'mdi-check-circle'},
-        {n:withEx,l:'With examples',sub:`${totalImgs} photos total`,cls:'primary',icon:'mdi-image-multiple-outline'},
-      ].map((c,i)=>x('div',{key:i,className:'col-6 col-md-3'},
-        x('div',{className:`card h-100 mb-0 shadow-sm`,style:{cursor:'pointer'},onClick:()=>i<3&&onSetSevFilter(`SEV ${i+1}`)},
-          x('div',{className:'card-body text-center py-3'},
-            x('i',{className:`mdi ${c.icon} fs-2 text-${c.cls} mb-1`}),
-            x('h3',{className:`fw-bold m-0 text-${c.cls}`},c.n),
-            x('div',{className:'small fw-semibold mt-1'},c.l),
-            x('div',{className:'small text-muted'},c.sub)
+  const[showCats,setShowCats]=useState(true);
+  const[expandedCats,setExpandedCats]=useState({});
+  const sevList=['SEV 1','SEV 2','SEV 3'];
+  const sevData=useMemo(()=>sevList.map(sev=>{
+    const rows=data.filter(r=>r.sev===sev);
+    const catMap={};
+    for(const r of rows){
+      if(!catMap[r.category])catMap[r.category]={parts:new Set(),lines:0};
+      catMap[r.category].parts.add(r.carPart);
+      catMap[r.category].lines++;
+    }
+    const cats=Object.entries(catMap).map(([cat,{parts,lines}])=>({cat,parts:parts.size,lines})).sort((a,b)=>b.lines-a.lines);
+    return{sev,rows,cats,cfg:SEV_CFG[sev]};
+  }),[data]);
+  const maxLines=useMemo(()=>Math.max(...sevData.flatMap(s=>s.cats.map(c=>c.lines)),1),[sevData]);
+
+  return x('div',{className:'dashboard-container py-3'},
+    // Header row
+    x('div',{className:'d-flex align-items-center justify-content-between mb-3'},
+      x('div',{className:'text-uppercase fw-bold small text-muted',style:{letterSpacing:'.8px'}},'What each severity means'),
+      x('button',{className:'btn btn-link btn-sm text-muted text-decoration-none p-0',onClick:()=>setShowCats(s=>!s)},(showCats?'Hide':'Show')+' breakdown by category')
+    ),
+    // 3 SEV header cards (top row)
+    x('div',{className:'row g-3 mb-2'},
+      sevData.map(({sev,rows,cfg},i)=>
+        x('div',{key:sev,className:'col-12 col-lg-4'},
+          x('div',{className:`card shadow-sm sev-card-${i+1} mb-0`},
+            x('div',{className:'card-body py-3'},
+              x('div',{className:'d-flex align-items-center justify-content-between mb-1'},
+                x('div',{className:'d-flex align-items-center gap-2'},
+                  x('span',{className:`text-${cfg.cls} fw-bold`},sev),
+                  x('span',{className:'fw-semibold'},cfg.action)
+                ),
+                x('span',{className:'small text-muted'},rows.length+' damage lines')
+              ),
+              x('div',{className:'fw-semibold small mb-1'},cfg.desc),
+              x('div',{className:'small text-muted'},cfg.advice)
+            )
           )
         )
-      ))
-    ),
-    x('div',{className:'card mt-3 shadow-sm'},
-      x('div',{className:'card-body'},
-        x('div',{className:'d-flex align-items-center justify-content-between mb-2'},
-          x('h5',{className:'m-0 text-uppercase'},x('i',{className:'mdi mdi-chart-bar me-2 text-muted'}),'Severity distribution'),
-          x('span',{className:'small text-muted'},total+' damage types')
-        ),
-        x('div',{className:'d-flex mb-1 justify-content-between small'},
-          x('span',{className:'text-danger fw-semibold'},'▶ Act now'),
-          x('span',{className:'text-muted'},Math.round(s1/total*100)+'% SEV 1 · '+Math.round(s2/total*100)+'% SEV 2 · '+Math.round(s3/total*100)+'% SEV 3'),
-          x('span',{className:'text-success fw-semibold'},'Can wait ▶')
-        ),
-        x('div',{className:'progress mb-3',style:{height:28,borderRadius:6}},
-          x('div',{className:'sev-bar-seg bg-danger',style:{flex:s1,cursor:'pointer'},onClick:()=>onSetSevFilter('SEV 1')},`SEV 1 · ${s1}`),
-          x('div',{className:'sev-bar-seg bg-warning',style:{flex:s2,cursor:'pointer'},onClick:()=>onSetSevFilter('SEV 2')},`SEV 2 · ${s2}`),
-          x('div',{className:'sev-bar-seg bg-success',style:{flex:s3,cursor:'pointer'},onClick:()=>onSetSevFilter('SEV 3')},`SEV 3 · ${s3}`)
-        ),
-        x('div',{className:'row g-2'},
-          [
-            {v:withEx,l:'Damage types with examples',p:Math.round(withEx/total*100)},
-            {v:totalImgs,l:'Example photos',p:null},
-            {v:total-withEx,l:'Still need photos',p:Math.round((total-withEx)/total*100)},
-          ].map((s,i)=>x('div',{key:i,className:'col-4'},
-            x('div',{className:'border rounded p-2 text-center'},
-              x('div',{className:'fs-5 fw-bold'},s.v.toLocaleString()),
-              x('div',{className:'small text-muted'},s.l),
-              s.p!==null&&x('div',{className:'badge bg-secondary-subtle text-secondary small mt-1'},s.p+'%')
-            )
-          ))
-        )
       )
+    ),
+    // Act now → Can wait arrow
+    x('div',{className:'d-flex align-items-center gap-2 my-2 px-1'},
+      x('span',{className:'small text-danger fw-semibold flex-shrink-0'},'Act now'),
+      x('div',{className:'flex-fill position-relative',style:{height:4,background:'linear-gradient(to right,var(--bs-danger),var(--bs-warning),var(--bs-secondary))',borderRadius:2}}),
+      x('i',{className:'mdi mdi-arrow-right text-secondary flex-shrink-0'}),
+      x('span',{className:'small text-secondary fw-semibold flex-shrink-0'},'Can wait')
+    ),
+    // 3 columns: typical + category breakdown
+    x('div',{className:'row g-3'},
+      sevData.map(({sev,rows,cats,cfg},i)=>{
+        const shown=showCats?cats.slice(0,5):[];
+        const extra=showCats?Math.max(0,cats.length-5):0;
+        const colMax=Math.max(...cats.map(c=>c.lines),1);
+        return x('div',{key:sev,className:'col-12 col-lg-4'},
+          x('div',{className:'card shadow-sm mb-0 h-100'},
+            x('div',{className:'card-body'},
+              // Typical
+              x('div',{className:'small mb-3'},
+                x('span',{className:`text-${cfg.cls} fw-semibold`},'Typical: '),
+                cfg.typical
+              ),
+              // Category breakdown
+              showCats&&x(Fragment,null,
+                x('div',{className:'d-flex justify-content-between small text-muted mb-2'},
+                  x('span',null,'Damage lines by category'),
+                  x('span',{className:'d-none d-md-block'},'Select to see car parts')
+                ),
+                shown.map((c,ci)=>{
+                  const isOpen=expandedCats[sev+c.cat];
+                  const catRows=data.filter(r=>r.sev===sev&&r.category===c.cat);
+                  return x('div',{key:c.cat},
+                    x('div',{className:'d-flex align-items-center gap-2 py-1 small',style:{cursor:'pointer'},
+                      onClick:()=>setExpandedCats(e=>({...e,[sev+c.cat]:!e[sev+c.cat]}))},
+                      x('i',{className:`mdi ${isOpen?'mdi-chevron-down':'mdi-chevron-right'} text-muted`,style:{fontSize:12}}),
+                      x('span',{className:'fw-semibold flex-fill text-truncate',style:{maxWidth:120}},c.cat),
+                      x('span',{className:'text-muted flex-shrink-0 me-1',style:{fontSize:11}},c.parts+' parts'),
+                      x('div',{style:{width:80,height:4,background:'var(--bs-gray-200)',borderRadius:2,flexShrink:0,position:'relative'}},
+                        x('div',{className:`cat-bar bg-${cfg.cls}`,style:{width:Math.round(c.lines/colMax*100)+'%',height:'100%'}})
+                      ),
+                      x('span',{className:'text-muted flex-shrink-0',style:{fontSize:11,width:48,textAlign:'right'}},c.lines+' lines')
+                    ),
+                    isOpen&&x('div',{className:'ps-3 pb-1 small'},
+                      catRows.slice(0,6).map((r,ri)=>
+                        x('div',{key:ri,className:'d-flex align-items-center gap-2 py-1 border-bottom',style:{cursor:'pointer'},onClick:()=>onSetSevFilter(sev)},
+                          x('span',{className:'text-truncate flex-fill'},r.detection),
+                          x('span',{className:'text-muted flex-shrink-0'},r.carPart),
+                          r.images.damaged.length>0&&x('i',{className:'mdi mdi-image-outline text-primary flex-shrink-0'})
+                        )
+                      ),
+                      catRows.length>6&&x('div',{className:'text-primary small mt-1 text-decoration-none',style:{cursor:'pointer'},onClick:()=>onSetSevFilter(sev)},`+ ${catRows.length-6} more in this category`)
+                    )
+                  );
+                }),
+                extra>0&&x('div',{className:`small mt-1 text-primary`,style:{cursor:'pointer'},onClick:()=>onSetSevFilter(sev)},`+ ${extra} more categories`)
+              ),
+              // CTA button
+              x('button',{className:'btn btn-outline-secondary btn-sm w-100 mt-3',onClick:()=>onSetSevFilter(sev)},`Show ${rows.length} damage lines`)
+            )
+          )
+        );
+      })
     )
   );
 }
 
-// ══ LOCATION (Truck PNG zones) ═══════════════════
+// ══ LOCATION// ══ LOCATION (Truck PNG zones) ═══════════════════
 function Location({data,fleet,onSelectPart}){
   const[vehicle,setVehicle]=useState('tractor');
   const[selZone,setSelZone]=useState(null);
@@ -752,7 +843,7 @@ function Location({data,fleet,onSelectPart}){
           x('div',{className:'card-body p-3'},
             x('h5',{className:'text-uppercase m-0 mb-3'},x('i',{className:'mdi mdi-map-marker me-2 text-muted'}),vehicle==='tractor'?'Tractor views':'Trailer views'),
             x('div',{style:{position:'relative',display:'inline-block',width:'100%'}},
-              x('img',{src:img,alt:'',style:{width:'100%',display:'block',opacity:.85}}),
+              x('img',{src:img,alt:'truck diagram',className:'truck-diagram',style:{width:'100%',display:'block',opacity:.9}}),
               curZones.map(z=>x('div',{
                 key:z.id,
                 className:'zone-overlay'+(selZone===z.id?' active':''),
@@ -921,6 +1012,135 @@ function FilterBar({data,filters,setFilters,totalVisible}){
   );
 }
 
+
+// ══ FEEDBACK MODAL ═══════════════════════════════
+function FeedbackModal({data,onClose}){
+  const[type,setType]=useState('Missing example');
+  const[part,setPart]=useState('');
+  const[det,setDet]=useState('');
+  const[comment,setComment]=useState('');
+  const[submitted,setSubmitted]=useState(false);
+  const parts=[...new Set(data.map(r=>r.carPart))].sort();
+  const dets=det?[...new Set(data.filter(r=>r.carPart===part).map(r=>r.detection))].sort():[];
+
+  function submit(){
+    const entry={ts:new Date().toISOString(),type,part,detection:det,comment};
+    const existing=JSON.parse(localStorage.getItem('dd_feedback')||'[]');
+    localStorage.setItem('dd_feedback',[...existing,entry].map(e=>JSON.stringify(e)).join('\n'));
+    setSubmitted(true);
+  }
+
+  if(submitted)return x('div',{className:'p-4 text-center'},
+    x('i',{className:'mdi mdi-check-circle fs-1 text-success d-block mb-2'}),
+    x('div',{className:'fw-semibold mb-1'},'Feedback saved'),
+    x('div',{className:'small text-muted mb-3'},'Stored locally. Export with the button below.'),
+    x('div',{className:'d-flex gap-2 justify-content-center'},
+      x('button',{className:'btn btn-outline-secondary btn-sm',onClick:()=>{
+        const data=localStorage.getItem('dd_feedback')||'No feedback yet';
+        const blob=new Blob([data],{type:'text/plain'});
+        const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dd-feedback.txt';a.click();
+      }},x('i',{className:'mdi mdi-download me-1'}),'Export feedback'),
+      x('button',{className:'btn btn-primary btn-sm',onClick:onClose},'Done')
+    )
+  );
+
+  return x('div',null,
+    x('div',{className:'d-flex align-items-center justify-content-between p-3 border-bottom'},
+      x('h5',{className:'m-0'},'Submit Feedback'),
+      x('button',{className:'btn-close',onClick:onClose})
+    ),
+    x('div',{className:'p-3'},
+      x('div',{className:'mb-3'},
+        x('label',{className:'form-label'},'Type'),
+        x('div',{className:'d-flex flex-wrap gap-2'},
+          ['Missing example','Wrong severity','Bad detection name','UX issue','Other'].map(t=>
+            x('button',{key:t,className:`btn btn-sm ${type===t?'btn-primary':'btn-outline-secondary'}`,onClick:()=>setType(t)},t)
+          )
+        )
+      ),
+      x('div',{className:'mb-3'},
+        x('label',{className:'form-label'},'Car Part'),
+        x('select',{className:'form-select form-select-sm',value:part,onChange:e=>{setPart(e.target.value);setDet('');}},
+          x('option',{value:''},'Select part…'),
+          parts.map(p=>x('option',{key:p,value:p},p))
+        )
+      ),
+      part&&x('div',{className:'mb-3'},
+        x('label',{className:'form-label'},'Damage Type'),
+        x('select',{className:'form-select form-select-sm',value:det,onChange:e=>setDet(e.target.value)},
+          x('option',{value:''},'All types in this part'),
+          [...new Set(data.filter(r=>r.carPart===part).map(r=>r.detection))].sort().map(d=>x('option',{key:d,value:d},d))
+        )
+      ),
+      x('div',{className:'mb-3'},
+        x('label',{className:'form-label'},'Comment'),
+        x('textarea',{className:'form-control form-control-sm',rows:3,placeholder:'What did you notice?',value:comment,onChange:e=>setComment(e.target.value)})
+      ),
+      x('div',{className:'d-flex gap-2 justify-content-end'},
+        x('button',{className:'btn btn-light btn-sm',onClick:onClose},'Cancel'),
+        x('button',{className:'btn btn-primary btn-sm',onClick:submit,disabled:!comment.trim()},x('i',{className:'mdi mdi-send me-1'}),'Submit')
+      )
+    )
+  );
+}
+
+// ══ COVERAGE TABLE ════════════════════════════════
+function Coverage({data}){
+  const[filter,setFilter]=useState('all');
+  const rows=useMemo(()=>{
+    return data.filter(r=>{
+      if(filter==='missing')return r.images.damaged.length===0;
+      if(filter==='covered')return r.images.damaged.length>0;
+      if(filter==='no-scan')return !r.scanLink;
+      return true;
+    }).sort((a,b)=>{
+      const ha=a.images.damaged.length>0?1:0,hb=b.images.damaged.length>0?1:0;
+      return ha-hb||a.carPart.localeCompare(b.carPart);
+    });
+  },[data,filter]);
+  const stats={total:data.length,covered:data.filter(r=>r.images.damaged.length>0).length,links:data.filter(r=>r.scanLink).length};
+  return x('div',{className:'dashboard-container'},
+    x('div',{className:'d-flex align-items-center gap-3 mt-2 mb-3'},
+      x('div',{className:'d-flex gap-2 flex-wrap'},
+        [
+          {id:'all',l:'All',n:stats.total},
+          {id:'missing',l:'Missing photos',n:stats.total-stats.covered},
+          {id:'covered',l:'Has photos',n:stats.covered},
+          {id:'no-scan',l:'No scan link',n:stats.total-stats.links},
+        ].map(f=>x('button',{key:f.id,className:`btn btn-sm ${filter===f.id?'btn-primary':'btn-outline-secondary'}`,onClick:()=>setFilter(f.id)},f.l,' ',x('span',{className:'badge bg-white text-primary ms-1'},f.n)))
+      ),
+      x('div',{className:'ms-auto small text-muted'},'Coverage: ',x('span',{className:'fw-semibold text-success'},Math.round(stats.covered/stats.total*100)+'%'),' · Scan links: ',x('span',{className:'fw-semibold text-primary'},Math.round(stats.links/stats.total*100)+'%'))
+    ),
+    x('div',{className:'card shadow-sm'},
+      x('div',{className:'card-body p-0'},
+        x('div',{className:'table-responsive'},
+          x('table',{className:'table table-sm align-middle mb-0'},
+            x('thead',null,x('tr',null,
+              x('th',null,'Car part'),
+              x('th',null,'Damage type'),
+              x('th',null,'SEV'),
+              x('th',{className:'text-center'},'Photos'),
+              x('th',{className:'text-center'},'Scan link'),
+              x('th',null,'Category'),
+            )),
+            x('tbody',null,rows.map((r,i)=>{
+              const hasImg=r.images.damaged.length>0,hasLink=!!r.scanLink;
+              return x('tr',{key:i,className:!hasImg?'table-warning':''},
+                x('td',null,x('span',{className:'fw-semibold small'},r.carPart)),
+                x('td',null,x('span',{className:'small'},r.detection)),
+                x('td',null,x(SevBadge,{sev:r.sev})),
+                x('td',{className:'text-center'},hasImg?x('span',{className:'badge bg-success-subtle text-success border border-success-subtle'},r.images.damaged.length+' ✓'):x('span',{className:'text-muted small'},'—')),
+                x('td',{className:'text-center'},hasLink?x('a',{href:r.scanLink,target:'_blank',className:'btn btn-sm btn-outline-primary py-0 px-1',style:{fontSize:11}},x('i',{className:'mdi mdi-open-in-new me-1'}),'View'):x('span',{className:'text-muted small'},'—')),
+                x('td',{className:'small text-muted'},r.category)
+              );
+            }))
+          )
+        )
+      )
+    )
+  );
+}
+
 // ══ APP ROOT ══════════════════════════════════
 const NAV=[
   {id:'overview',label:'Overview',icon:'mdi-view-grid-outline'},
@@ -928,6 +1148,7 @@ const NAV=[
   {id:'lines',label:'Damage Lines',icon:'mdi-format-list-bulleted'},
   {id:'parts',label:'Car Parts',icon:'mdi-car-wrench'},
   {id:'browse',label:'Browse',icon:'mdi-image-multiple-outline'},
+  {id:'coverage',label:'Coverage',icon:'mdi-clipboard-alert-outline'},
 ];
 
 function App(){
@@ -936,6 +1157,7 @@ function App(){
   const[tab,setTab]=useState('browse');
   const[activePart,setActivePart]=useState(null);
   const[lightbox,setLightbox]=useState(null);
+  const[showFeedback,setShowFeedback]=useState(false);
   const[filters,setFilters]=useState({search:'',sevs:new Set(),withExamples:false,category:'',detection:'',orientation:''});
   const fleet=useMemo(()=>{const m=location.hash.match(/fleet=([a-z]+)/);return m?m[1]:null;},[]);
 
@@ -967,16 +1189,18 @@ function App(){
   // Dark mode + share
   useEffect(()=>{
     const btn=document.getElementById('dark-mode-btn');
+    const fbBtn=document.getElementById('feedback-sidebar-btn');
+    if(fbBtn)fbBtn.onclick=()=>setShowFeedback(s=>!s);
     const shareBtn=document.getElementById('share-link-btn');
     const shareMenu=document.getElementById('share-menu');
     const shareItems=document.getElementById('share-menu-items');
     if(btn){
       const updateDarkBtn=()=>{
-        const isDark=document.documentElement.classList.contains('dark');
+        const isDark=document.body.classList.contains('dark-mode');
         btn.innerHTML=`<i class="mdi ${isDark?'mdi-weather-sunny':'mdi-moon-waning-crescent'} me-2"></i>${isDark?'Light mode':'Dark mode'}`;
       };
       updateDarkBtn();
-      btn.onclick=()=>{document.documentElement.classList.toggle('dark');updateDarkBtn();};
+      btn.onclick=()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('dd_dark',document.body.classList.contains('dark-mode'));updateDarkBtn();};
     }
     if(shareBtn&&shareMenu&&shareItems){
       shareBtn.onclick=()=>{shareMenu.style.display=shareMenu.style.display==='none'?'block':'none';};
@@ -1005,7 +1229,7 @@ function App(){
   if(error)return x('div',{className:'d-flex align-items-center justify-content-center flex-column gap-2',style:{height:'100%'}},x('i',{className:'mdi mdi-alert-circle fs-1 text-danger'}),x('div',{className:'fw-semibold'},'Failed to load data'),x('div',{className:'text-muted small'},error));
   if(!data)return x('div',{className:'d-flex align-items-center justify-content-center flex-column gap-2',style:{height:'100%'}},x('div',{className:'spinner-border text-primary'}),x('div',{className:'text-muted'},'Loading damage catalog…'));
 
-  const tabTitles={overview:'Overview',location:'Location',lines:'Damage Lines',parts:'Car Parts',browse:'Browse Catalog'};
+  const tabTitles={overview:'Overview',location:'Location',lines:'Damage Lines',parts:'Car Parts',browse:'Browse Catalog',coverage:'Coverage & Links'};
 
   return x(Fragment,null,
     // Topbar (fleet banner or filter bar)
@@ -1033,16 +1257,22 @@ function App(){
       tab==='lines'&&x(DamageLines,{data:filtered,fleet,onSelectPart:setActivePart}),
       tab==='parts'&&x(CarParts,{data:filtered,fleet,onSelectPart:setActivePart}),
       tab==='browse'&&x(Browse,{data:filtered,fleet,onSelectPart:setActivePart,onOpenLightbox:openLightbox}),
+      tab==='coverage'&&x(Coverage,{data:data||[]}),
     ),
     // PDV (slide-in)
     activePart&&pdvRows.length>0&&x('div',{style:{position:'fixed',inset:0,zIndex:200,display:'flex'}},
       x('div',{style:{flex:1,background:'rgba(0,0,0,.35)',backdropFilter:'blur(2px)'},onClick:()=>setActivePart(null)}),
       x('div',{className:'bg-white overflow-auto',style:{width:640,maxWidth:'100%',height:'100%',boxShadow:'-4px 0 32px rgba(0,0,0,.12)'}},x(PDV,{rows:pdvRows,partName:activePart,fleet,onClose:()=>setActivePart(null),onOpenLightbox:openLightbox}))
     ),
+    showFeedback&&x('div',{style:{position:'fixed',inset:0,zIndex:400,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,.4)'},onClick:e=>{if(e.target===e.currentTarget)setShowFeedback(false);}},
+      x('div',{className:'bg-white rounded-3 shadow-lg',style:{width:460,maxWidth:'95vw',maxHeight:'90vh',overflow:'auto'}},x(FeedbackModal,{data:data||[],onClose:()=>setShowFeedback(false)}))
+    ),
+    x('button',{className:'feedback-fab btn btn-primary',title:'Submit feedback',onClick:()=>setShowFeedback(true)},x('i',{className:'mdi mdi-comment-outline'})),
     lightbox&&x(Lightbox,{...lightbox,onClose:()=>setLightbox(null)})
   );
 }
 
+if(localStorage.getItem('dd_dark')==='true')document.body.classList.add('dark-mode');
 ReactDOM.createRoot(document.getElementById('root')).render(x(App));
 })();
 </script>
